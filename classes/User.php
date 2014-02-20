@@ -34,8 +34,19 @@ class User extends DataModel {
     }
 
     public function setPassword($password) {
-        // TODO HASH FUNCTION!!!11111!!!!
-        $this->password = $password;
+        $this->password = self::hashPassword($password);
+    }
+
+    private static function hashPassword($password)
+    {
+        $salt = md5(mt_rand());
+        return crypt($password, '$5$rounds=5000$'.$salt.'$');
+    }
+
+
+    private static function matchPassword($userInput, $passInDb)
+    {
+        return $passInDb == crypt($userInput, $passInDb);
     }
 
     public function firstName() {
@@ -81,9 +92,10 @@ class User extends DataModel {
            $user = $userResult[0];
             return new User($user->FirstName, $user->LastName, $user->Email, $user->Password, $user->UID);
         } else {
-
+            return false;
         }
     }
+
 
     static public function getUserWithEmail($email) {
             $model = self::getDataModel();
@@ -101,5 +113,9 @@ class User extends DataModel {
     static private function getDataModel() {
         $model = new DataModel(self::$tbl_name, self::$primary_key);
         return $model;
+    }
+
+    static public function login($email, $pw) {
+        //TODO
     }
 } 
