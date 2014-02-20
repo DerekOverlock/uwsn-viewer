@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS `uwsn_viewer`.`User` (
   `LastName` VARCHAR(45) NOT NULL,
   `Email` VARCHAR(200) NOT NULL,
   `Password` VARCHAR(64) NOT NULL,
-  PRIMARY KEY (`UID`))
+  PRIMARY KEY (`UID`),
+  UNIQUE INDEX `Email_UNIQUE` (`Email` ASC))
 ENGINE = InnoDB;
 
 
