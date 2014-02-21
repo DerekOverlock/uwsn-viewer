@@ -1,10 +1,11 @@
 <?php
 require_once __DIR__ . "/../config.inc.php";
-require_once PHP_LIB . "/Model.php";
+require_once PHP_LIB . "/Database.php";
 
-class User extends DataModel {
+class User {
     static private $tbl_name = "User";
     static private $primary_key = "UID";
+
     private $model;
     private $first_name;
     private $last_name;
@@ -12,13 +13,13 @@ class User extends DataModel {
     private $password;
     private $uid = null;
 
-    public function __construct($first_name, $last_name, $email, $password, $uid = null) {
+    private function __construct($first_name, $last_name, $email, $password, $uid = null) {
         $this->first_name = $first_name;
         $this->last_name = $last_name;
         $this->email = $email;
         $this->password = $password;
         $this->uid = $uid;
-        $this->model = self::getDataModel();
+        $this->model = self::getDatabase();
     }
 
     public function setFirstName($first_name) {
@@ -84,7 +85,7 @@ class User extends DataModel {
     }
 
     static public function getUserWithUid($uid) {
-        $model = self::getDataModel();
+        $model = self::getDatabase();
         $uid = $model->sanitize($uid);
         $sql = "SELECT * FROM User WHERE UID = '$uid'";
         $userResult = $model->query($sql)->itemize();
@@ -96,23 +97,22 @@ class User extends DataModel {
         }
     }
 
+    static private function getDatabase() {
+        return new Database(self::$tbl_name, self::$primary_key);
+    }
+
 
     static public function getUserWithEmail($email) {
-            $model = self::getDataModel();
-            $email = $model->sanitize($email);
-            $sql = "SELECT * FROM User WHERE Email = '$email'";
-            $userResult = $model->query($sql)->itemize();
-            if($userResult) {
-                $user = $userResult[0];
-                return new User($user->FirstName, $user->LastName, $user->Email, $user->Password, $user->UID);
+        $model = self::getDatabase();
+        $email = $model->sanitize($email);
+        $sql = "SELECT * FROM User WHERE Email = '$email'";
+        $userResult = $model->query($sql)->itemize();
+        if($userResult) {
+            $user = $userResult[0];
+            return new User($user->FirstName, $user->LastName, $user->Email, $user->Password, $user->UID);
         } else {
             return false;
         }
-    }
-
-    static private function getDataModel() {
-        $model = new DataModel(self::$tbl_name, self::$primary_key);
-        return $model;
     }
 
     static public function login($email, $pw) {

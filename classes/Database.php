@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . "/../config.inc.php";
 
-class DataModel {
+final class Database {
     /**
      * @var mysqli $mysqli
      */
@@ -13,10 +13,9 @@ class DataModel {
     private $sql = null;
     private $success = null;
     private $error = null;
+    private $errno = null;
     private $insert_id = null;
-
-    private $tbl_name = null;
-    private $primary_key = null;
+    private $num_affected_rows = null;
 
     public function __construct($tbl_name, $primary_key) {
         $this->tbl_name = $tbl_name;
@@ -40,24 +39,28 @@ class DataModel {
         return $sanitized_var;
     }
 
-    protected function query($sql) {
+    public function query($sql) {
         if(!$this->mysqli) $this->connect();
         $this->success = false;
         $this->error = false;
+        $this->errno = false;
         $this->sql = $sql;
         $this->insert_id = null;
+        $this->num_affected_rows = null;
         $this->result = $this->mysqli->query($sql);
         if($this->result) {
             $this->success = true;
-            if($this->mysqli->insert_id > 0)
-                $this->insert_id = $this->mysqli->insert_id;
+            $this->insert_id = $this->mysqli->insert_id;
+            $this->num_affected_rows = $this->mysqli->affected_rows;
+        } else {
+            $this->error = $this->mysqli->error;
+            $this->errno = $this->mysqli->errno;
         }
-        else $this->error = $this->mysqli->error;
         $this->disconnect();
         return $this;
     }
 
-    protected function save($fields, $id = NULL) {
+    public function save($fields, $id = NULL) {
         if($id) {
             $sql = "UPDATE " .$this->getTableName();
         } else {
@@ -74,20 +77,27 @@ class DataModel {
         return $this->query($sql)->getQueryResult();
     }
 
-    protected function getQueryResult() {
+    public function delete($id) {
+        $sql = "DELETE FROM " . $this->getTableName() . " WHERE `".$this->getPrimaryKey()."`='$id''";
+        return $this->query($sql)->getQueryResult();
+    }
+
+    public function getQueryResult() {
         $result = new stdClass;
         $result->success = $this->success;
         $result->error = $this->error;
+        $result->errno = $this->errno;
         $result->sql = $this->sql;
         $result->result = $this->result;
         $result->insert_id = $this->insert_id;
+        $result->num_affected_rows = $this->num_affected_rows;
         return $result;
     }
 
     /**
-     * @param mysqli_result $result
+     * @return array(mysqli_object)
      */
-    protected function itemize() {
+    public function itemize() {
         $items = array();
         while($obj = $this->result->fetch_object()) {
             $items[] = $obj;
@@ -96,10 +106,16 @@ class DataModel {
         return $items;
     }
 
+    /**
+     * @return String
+     */
     protected function getTableName() {
         return $this->tbl_name;
     }
 
+    /**
+     * @return String
+     */
     protected function getPrimaryKey() {
         return $this->primary_key;
     }
