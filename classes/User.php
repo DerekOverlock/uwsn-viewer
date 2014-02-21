@@ -13,6 +13,9 @@ class User {
     private $password;
     private $uid = null;
 
+    // TODO - constructor assumes that $password is already hashed, when doing new User(), it will not be hashed
+    //
+
     private function __construct($first_name, $last_name, $email, $password, $uid = null) {
         $this->first_name = $first_name;
         $this->last_name = $last_name;
