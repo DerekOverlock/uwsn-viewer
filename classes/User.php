@@ -13,14 +13,11 @@ class User {
     private $password;
     private $uid = null;
 
-    // TODO - constructor assumes that $password is already hashed, when doing new User(), it will not be hashed
-    //
-
-    private function __construct($first_name, $last_name, $email, $password, $uid = null) {
+    private function __construct($first_name, $last_name, $email, $encryptedPassword, $uid = null) {
         $this->first_name = $first_name;
         $this->last_name = $last_name;
         $this->email = $email;
-        $this->password = $password;
+        $this->password = $encryptedPassword;
         $this->uid = $uid;
         $this->model = self::getDatabase();
     }
@@ -38,10 +35,10 @@ class User {
     }
 
     public function setPassword($password) {
-        $this->password = self::hashPassword($password);
+        $this->password = self::encryptPassword($password);
     }
 
-    private static function hashPassword($password)
+    public static function encryptPassword($password)
     {
         $salt = md5(mt_rand());
         return crypt($password, '$5$rounds=5000$'.$salt.'$');

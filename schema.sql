@@ -25,7 +25,8 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `uwsn_viewer`.`Node` (
   `NodeID` INT NOT NULL AUTO_INCREMENT,
   `Name` VARCHAR(45) NULL,
-  `Location` VARCHAR(45) NULL,
+  `Latitude` FLOAT(10,6) NULL,
+  `Longitude` FLOAT(10,6) NULL,
   `SerialNumber` VARCHAR(45) NULL,
   `OwnedBy` VARCHAR(200) NULL,
   PRIMARY KEY (`NodeID`))
