@@ -22,22 +22,6 @@ class User {
         $this->model = self::getDatabase();
     }
 
-    public function setFirstName($first_name) {
-        $this->first_name = $first_name;
-    }
-
-    public function setLastName($last_name) {
-        $this->last_name = $last_name;
-    }
-
-    public function setEmail($email) {
-        $this->email = $email;
-    }
-
-    public function setPassword($password) {
-        $this->password = self::encryptPassword($password);
-    }
-
     public static function encryptPassword($password)
     {
         $salt = md5(mt_rand());
@@ -50,20 +34,38 @@ class User {
         return $passInDb == crypt($userInput, $passInDb);
     }
 
-    public function firstName() {
-        return $this->first_name;
+    public function firstName($firstName = NULL) {
+        if($firstName) {
+            $this->first_name = $firstName;
+            return $this;
+        } else
+            return $this->first_name;
     }
 
-    public function lastName() {
-        return $this->last_name;
+    public function lastName($lastName = NULL) {
+        if($lastName) {
+            $this->last_name = $lastName;
+            return $this;
+        } else
+            return $this->last_name;
     }
 
-    public function email() {
-        return $this->email;
+    public function email($email = NULL) {
+        if($email) {
+            $this->email = $email;
+            return $this;
+        } else
+            return $this->email;
     }
 
-    public function password() {
-        return $this->password;
+    public function password($password = NULL) {
+        if($password) {
+            $this->password = self::encryptPassword($password);
+            return $this;
+        } else {
+            return $this->password;
+        }
+
     }
 
     public function uid() {
