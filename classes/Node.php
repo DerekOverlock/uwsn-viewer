@@ -1,5 +1,4 @@
 <?php
-
 class Node {
     private static $tbl_name = "Node";
     private static $primary_key = "NodeID";
@@ -10,7 +9,6 @@ class Node {
     private $longitude;
     private $serial_number;
     private $owned_by;
-    private $readings;
 
     private $node_id;
 
@@ -21,10 +19,7 @@ class Node {
         $this->longitude = $longitude;
         $this->serial_number = $serial_number;
         $this->owned_by = $owned_by;
-        if($node_id) {
-            $this->node_id = $node_id;
-            $this->readings = NodeReading::getNodeReadings($node_id);
-        }
+        $this->node_id = $node_id;
     }
 
     public function name($name = null) {
@@ -70,6 +65,22 @@ class Node {
         } else {
             return $this->owned_by;
         }
+    }
+
+    /**
+     * @return array(NodeReading)
+     */
+    public function getReadings() {
+        if(!$this->node_id) return false;
+        return NodeReading::getNodeReadings($this->node_id);
+    }
+
+    /**
+     * @return array(NodeImage)
+     */
+    public function getImages() {
+        if(!$this->node_id) return false;
+        return NodeImage::getImages($this->node_id);
     }
 
     public function addReading($current, $temp, $timestamp) {

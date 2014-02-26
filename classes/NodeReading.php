@@ -22,7 +22,7 @@ class NodeReading {
         $this->temp = $temp;
         $this->timestamp = $timestamp;
         $this->node_id = $node_id;
-        if($nr_id) $this->nr_id = $nr_id;
+        $this->nr_id = $nr_id;
     }
 
     public function save() {
@@ -57,7 +57,11 @@ class NodeReading {
         }
     }
 
-    public function timestamp($timestamp = NULL) {
+    /**
+     * @param DateTime $timestamp
+     * @return DateTime
+     */
+    public function timestamp(DateTime $timestamp = NULL) {
         if($timestamp) {
             $this->timestamp = $timestamp;
             return $this;
@@ -75,6 +79,10 @@ class NodeReading {
         }
     }
 
+    /**
+     * @param $node_id
+     * @return array(NodeReading)
+     */
     static public function getNodeReadings($node_id) {
         $db = self::getDatabase();
         $node_id = $db->sanitize($node_id);
