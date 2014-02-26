@@ -7,72 +7,58 @@ require_once PHP_LIB . "/User.php";
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-    </head>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+</head>
 
-    <body>
-        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-            <div class="container-fluid">
-                <!-- Brand and toggle get grouped for better mobile display -->
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="#">Brand</a>
-                </div>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+                <div class="container-fluid">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#uwsn-viewer-navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="#">UWSN-Viewer</a>
+                    </div>
 
-                <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav">
-                        <li class="active"><a href="#">Link</a></li>
-                        <li><a href="#">Link</a></li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="#">Action</a></li>
-                                <li><a href="#">Another action</a></li>
-                                <li><a href="#">Something else here</a></li>
-                                <li class="divider"></li>
-                                <li><a href="#">Separated link</a></li>
-                                <li class="divider"></li>
-                                <li><a href="#">One more separated link</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <form class="navbar-form navbar-left" role="search">
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Search">
-                        </div>
-                        <button type="submit" class="btn btn-default">Submit</button>
-                    </form>
-                    <ul class="nav navbar-nav navbar-right">
-                        <li><a href="#">Link</a></li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="#">Action</a></li>
-                                <li><a href="#">Another action</a></li>
-                                <li><a href="#">Something else here</a></li>
-                                <li class="divider"></li>
-                                <li><a href="#">Separated link</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div><!-- /.navbar-collapse -->
-            </div><!-- /.container-fluid -->
-        </nav>
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse" id="uwsn-viewer-navbar">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#">Link</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">Action</a></li>
+                                    <li><a href="#">Another action</a></li>
+                                    <li><a href="#">Something else here</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="#">Separated link</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="#">One more separated link</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!-- /.navbar-collapse -->
+                </div><!-- /.container-fluid -->
+            </nav>
+        </div>
+    </div>
 
 
     <div style="margin-top:50px; margin-bottom: 10px">------------------------------------------------------------------------------</div>
     <!-- section for node registration form-->
     <div class="row">
+        <h1>Register Node Page</h1>
         <div class="col-md-6 col-md-offset-3">
             <h4>Register a Node</h4>
             <form role="form">
@@ -107,6 +93,27 @@ require_once PHP_LIB . "/User.php";
     </div>
 
     <div style="margin-top:50px; margin-bottom: 10px">--------------------------------------------------------------------------</div>
+    <div class="row">
+        <h1>Gallery for Pictures That Taken by Nodes Page</h1>
+        <div class="col-md-10 col-md-offset-1">
+            <form class="form-inline" role="form">
+                <div class="form-group">
+                    <label for="ownedBy">Owned By</label>
+                    <select class="form-control input-sm" id="ownedBy" name="ownedBy">
+                        <option>University of Connecticut</option>
+                        <option>University of Southern Califonia</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="time">Time</label>
+                    <select class="form-control input-sm" id="time" name="time">
+                        <option>New to Old</option>
+                        <option>Old to New</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-2 col-md-offset-1" >
             <a href="#" class="thumbnail" style="position: relative; padding: 0px; display: inline-block">
@@ -143,6 +150,7 @@ require_once PHP_LIB . "/User.php";
 
     <div style="margin-top:50px; margin-bottom: 10px">--------------------------------------------------------------------------</div>
     <div class="row">
+        <h1>Add Comment to a Picture Page</h1>
         <div class="col-md-3 col-md-offset-2">
             <div class="thumbnail">
                 <img data-src="holder.js/300x200" src="img/pic_holder.png">
@@ -165,6 +173,42 @@ require_once PHP_LIB . "/User.php";
     </div>
 
     <div style="margin-top:50px; margin-bottom: 10px">--------------------------------------------------------------------------</div>
+    <div class="row">
+        <h1>User Registration Page</h1>
+        <div class="col-md-6 col-md-offset-3">
+            <h4>Register a User</h4>
+            <form role="form">
+                <div class="form-group">
+                    <label for="username">User Name</label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter User Name">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email">
+                </div>
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter First Name">
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter Last Name">
+                </div>
+                <div class="form-group">
+                    <label for="org">Organization</label>
+                    <input type="text" class="form-control" id="org" name="org" placeholder="Enter Organization">
+                </div>
+
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+        </div>
+    </div>
     <div style="margin-top:50px; margin-bottom: 10px">--------------------------------------------------------------------------</div>
-    </body>
+
+</div>
+</body>
 </html>
