@@ -1,63 +1,69 @@
 <?php
 class Node {
-    private static $tbl_name = "Node";
-    private static $primary_key = "NodeID";
+    private static $tbl_name = "NodeNetwork";
+    private static $primary_key = "NetworkID";
 
     private $model;
-    private $NodeID, $Name, $Latitude, $Longitude, $SerialNumber, $OwnedBy, $Description, $NetworkID;
+    private $name;
+    private $latitude;
+    private $longitude;
+    private $serial_number;
+    private $owned_by;
 
-    private function __construct($name, $latitude, $longitude, $serial_number, $owned_by, $node_id = NULL) {
+    private $node_id;
 
-    }
-
-    static public function AddNode($name, $latitude, $longitude, $serial_number, $owned_by, $description, $network_id) {
-        // add node to DB
-        // grab new node id
-        return self::getNode($new_node_id);
+    public function __construct($name, $latitude, $longitude, $serial_number, $owned_by, $node_id = NULL) {
+        $this->model = self::getDatabase();
+        $this->name = $name;
+        $this->latitude = $latitude;
+        $this->longitude = $longitude;
+        $this->serial_number = $serial_number;
+        $this->owned_by = $owned_by;
+        $this->node_id = $node_id;
     }
 
     public function name($name = null) {
         if($name) {
-            $this->Name = $name;
+            $this->name = $name;
             return $this;
         } else {
-            return $this->Name;
+            return $this->name;
         }
     }
 
     public function latitude($latitude = null) {
         if($latitude) {
-            $this->Latitude = $latitude;
+            $this->latitude = $latitude;
             return $this;
         } else {
-            return $this->Latitude;
+            return $this->latitude;
         }
     }
 
     public function longitude($longitude = null) {
         if($longitude) {
-            $this->Longitude = $longitude;
+            $this->longitude = $longitude;
             return $this;
         } else {
-            return $this->Longitude;
+            return $this->longitude;
         }
     }
 
     public function serial_number($serial_number = null) {
         if($serial_number) {
-            $this->SerialNumber = $serial_number;
+            $this->serial_number = $serial_number;
             return $this;
         } else {
-            return $this->SerialNumber;
+            return $this->serial_number;
         }
     }
 
     public function owned_by($owned_by = null) {
         if($owned_by) {
-            $this->OwnedBy = $owned_by;
+            $this->owned_by = $owned_by;
             return $this;
         } else {
-            return $this->OwnedBy;
+            return $this->owned_by;
         }
     }
 
@@ -65,16 +71,16 @@ class Node {
      * @return array(NodeReading)
      */
     public function getReadings() {
-        if(!$this->NodeID) return false;
-        return NodeReading::getNodeReadings($this->NodeID);
+        if(!$this->node_id) return false;
+        return NodeReading::getNodeReadings($this->node_id);
     }
 
     /**
      * @return array(NodeImage)
      */
     public function getImages() {
-        if(!$this->NodeID) return false;
-        return NodeImage::getImages($this->NodeID);
+        if(!$this->node_id) return false;
+        return NodeImage::getImages($this->node_id);
     }
 
     public function addReading($current, $temp, $timestamp) {
@@ -106,10 +112,10 @@ class Node {
         $db = self::getDatabase();
         $node_id = $db->sanitize($node_id);
         $sql = "SELECT * FROM ". self::$tbl_name . " WHERE NodeID = '$node_id'";
-        $result = $db->query($sql)->itemize(__CLASS__);
+        $result = $db->query($sql)->itemize();
         if($result) {
             $node = $result[0];
-            return $node;
+            return new Node($node->Name, $node->Latitude, $node->Longitude, $node->SerialNumber, $node->OwnedBy, $node->NodeID);
         } else {
             return false;
         }

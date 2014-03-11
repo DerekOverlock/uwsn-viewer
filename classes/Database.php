@@ -97,9 +97,9 @@ final class Database {
     /**
      * @return array(mysqli_object)
      */
-    public function itemize() {
+    public function itemize($className = NULL) {
         $items = array();
-        while($obj = $this->result->fetch_object()) {
+        while($obj = $this->result->fetch_object($className)) {
             $items[] = $obj;
         }
         if(count($items) == 0) return false;
