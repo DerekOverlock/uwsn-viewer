@@ -48,6 +48,10 @@ class NodeNetwork {
         return $result;
     }
 
+    public function getNodesInNetwork() {
+        return Node::getNodesInNetwork($this->NetworkID);
+    }
+
     /**
      * @return NodeNetwork[]
      */
