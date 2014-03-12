@@ -1,0 +1,38 @@
+.node-gallery .thumbnail {
+    position: relative;
+    padding: 0;
+    display: inline-block;
+}
+
+.node-gallery:before,
+.node-gallery:after {
+    content: "";
+    display: block;
+}
+
+.node-gallery:after {
+    clear: both;
+}
+
+.node-gallery .thumbnail div {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    padding:4px;
+    z-index: 999;
+    opacity: 0.5;
+    background: black;
+    color: white;
+    height: 40px;
+    width: 100%;
+}
+
+.border-box {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+}
+
+.node-comments {
+    margin-top: 15px;
+}

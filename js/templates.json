@@ -1,0 +1,22 @@
+[
+    {
+        "id" : "manage_node",
+        "file" : "templates/manage_node.html"
+    },
+    {
+        "id" : "manage_network",
+        "file" : "templates/manage_network.html"
+    },
+    {
+        "id": "node_gallery",
+        "file" : "templates/node_gallery.html"
+    },
+    {
+        "id": "node_gallery_filter",
+        "file" : "templates/node_gallery_filter.html"
+    },
+    {
+        "id": "node_image",
+        "file" : "templates/node_image.html"
+    }
+]

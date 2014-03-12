@@ -88,6 +88,7 @@ CREATE TABLE IF NOT EXISTS `uwsn_viewer`.`NodeImage` (
   `NodeImageID` INT NOT NULL AUTO_INCREMENT,
   `NodeID` INT NOT NULL,
   `Image` VARCHAR(200) NOT NULL,
+  `Timestamp` DATETIME NOT NULL,
   PRIMARY KEY (`NodeImageID`),
   INDEX `FK_NodeID_idx` (`NodeID` ASC),
   CONSTRAINT `FK_NodeImage_NodeID`

@@ -1,0 +1,30 @@
+<h3>Viewing {{NodeName} Image {{Timestamp}}</h3>
+<div class="col-md-6">
+    <div class="thumbnail">
+        <a href="{{Image}}" target="_blank"><img data-src="holder.js/300x200" src="{{Image}}"></a>
+    </div>
+</div>
+<div class="col-md-6">
+    <div class="border-box">
+        <h4>New Notes</h4>
+        <form role="form">
+            <div class="form-group">
+                <label for="picNotes">Add notes to the image:</label>
+                <textarea class="form-control" id="picNotes" name="picNotes" rows="3" placeholder="Enter your description for this image"></textarea>
+            </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+
+        <div class="node-comments">
+            {{#Comments}}
+            <div>
+                <div class="comment-header">
+                    <div class="comment-user">{{UserName}}</div>
+                    <div class="comment-time">{{Timestamp}}</div>
+                </div>
+                <div class="comment-content">{{Notes}}</div>
+            </div>
+            {{/Comments}}
+        </div>
+    </div>
+</div>

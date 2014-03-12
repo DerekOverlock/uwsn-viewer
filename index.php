@@ -10,207 +10,61 @@ require_once PHP_LIB . "/User.php";
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.2/mustache.min.js"></script>
+    <script src="js/TemplateManager.js"></script>
+    <script src="js/views/ManageNetworkView.js"></script>
+    <script>
+        $(function() {
+            app.TemplateManager.setCallback(init);
+            app.TemplateManager.download();
+        });
+
+        function init() {
+            new app.ManageNetworkView({el: $("div.container")});
+        }
+    </script>
 </head>
 
 <body>
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-                <div class="container-fluid">
-                    <!-- Brand and toggle get grouped for better mobile display -->
-                    <div class="navbar-header">
-                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#uwsn-viewer-navbar">
-                            <span class="sr-only">Toggle navigation</span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
-                        <a class="navbar-brand" href="#">UWSN-Viewer</a>
-                    </div>
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#uwsn-viewer-navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">UWSN-Viewer</a>
+        </div>
 
-                    <!-- Collect the nav links, forms, and other content for toggling -->
-                    <div class="collapse navbar-collapse" id="uwsn-viewer-navbar">
-                        <ul class="nav navbar-nav">
-                            <li><a href="#">Link</a></li>
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#">Action</a></li>
-                                    <li><a href="#">Another action</a></li>
-                                    <li><a href="#">Something else here</a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="#">Separated link</a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="#">One more separated link</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div><!-- /.navbar-collapse -->
-                </div><!-- /.container-fluid -->
-            </nav>
-        </div>
-    </div>
-
-
-    <div style="margin-top:50px; margin-bottom: 10px">------------------------------------------------------------------------------</div>
-    <!-- section for node registration form-->
-    <div class="row">
-        <h1>Register Node Page</h1>
-        <div class="col-md-6 col-md-offset-3">
-            <h4>Register a Node</h4>
-            <form role="form">
-
-                <div class="form-group">
-                    <label for="nodeName">Node Name</label>
-                    <input type="text" class="form-control" id="nodeName" name="nodeName" placeholder="Enter Node Name">
-                </div>
-                <div class="form-group">
-                    <label for="latitude">Latitude</label>
-                    <input type="number" class="form-control" id="latitude" name="latitude" placeholder="Enter Latitude">
-                </div>
-                <div class="form-group">
-                    <label for="longitude">Longitude</label>
-                    <input type="number" class="form-control" id="longitude" name="longitude" placeholder="Enter Longitude">
-                </div>
-                <div class="form-group">
-                    <label for="serialNum">Serial Number</label>
-                    <input type="text" class="form-control" id="serialNum" name="serialNum" placeholder="Enter Longitude">
-                </div>
-                <div class="form-group">
-                    <label for="ownedBy">Owned By</label>
-                    <select class="form-control input-sm" id="ownedBy" name="ownedBy">
-                        <option>University of Connecticut</option>
-                        <option>University of Southern Califonia</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-default">Submit</button>
-            </form>
-        </div>
-    </div>
-
-    <div style="margin-top:50px; margin-bottom: 10px">--------------------------------------------------------------------------</div>
-    <div class="row">
-        <h1>Gallery for Pictures That Taken by Nodes Page</h1>
-        <div class="col-md-10 col-md-offset-1">
-            <form class="form-inline" role="form">
-                <div class="form-group">
-                    <label for="ownedBy">Owned By</label>
-                    <select class="form-control input-sm" id="ownedBy" name="ownedBy">
-                        <option>University of Connecticut</option>
-                        <option>University of Southern Califonia</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="time">Time</label>
-                    <select class="form-control input-sm" id="time" name="time">
-                        <option>New to Old</option>
-                        <option>Old to New</option>
-                    </select>
-                </div>
-            </form>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-2 col-md-offset-1" >
-            <a href="#" class="thumbnail" style="position: relative; padding: 0px; display: inline-block">
-                <img data-src="holder.js/178x178" src="img/pic_holder.png" >
-                <div style="position: absolute; left: 0px; bottom: 0px; padding:4px; z-index: 999; opacity: 0.5; background: black; color: white; height: 40px; width: 100%;">hello</div>
-            </a>
-        </div>
-        <div class="col-md-2" >
-            <a href="#" class="thumbnail" style="position: relative; padding: 0px; display: inline-block">
-                <img data-src="holder.js/178x178" src="img/pic_holder.png" >
-                <div style="position: absolute; left: 0px; bottom: 0px; padding:4px; z-index: 999; opacity: 0.5; background: black; color: white; height: 40px; width: 100%;">hello</div>
-            </a>
-        </div>
-        <div class="col-md-2" >
-            <a href="#" class="thumbnail" style="position: relative; padding: 0px; display: inline-block">
-                <img data-src="holder.js/178x178" src="img/pic_holder.png" >
-                <div style="position: absolute; left: 0px; bottom: 0px; padding:4px; z-index: 999; opacity: 0.5; background: black; color: white; height: 40px; width: 100%;">hello</div>
-            </a>
-        </div>
-        <div class="col-md-2" >
-            <a href="#" class="thumbnail" style="position: relative; padding: 0px; display: inline-block">
-                <img data-src="holder.js/178x178" src="img/pic_holder.png" >
-                <div style="position: absolute; left: 0px; bottom: 0px; padding:4px; z-index: 999; opacity: 0.5; background: black; color: white; height: 40px; width: 100%;">hello</div>
-            </a>
-        </div>
-        <div class="col-md-2" >
-            <a href="#" class="thumbnail" style="position: relative; padding: 0px; display: inline-block">
-                <img data-src="holder.js/178x178" src="img/pic_holder.png" >
-                <div style="position: absolute; left: 0px; bottom: 0px; padding:4px; z-index: 999; opacity: 0.5; background: black; color: white; height: 40px; width: 100%;">hello</div>
-            </a>
-        </div>
-    </div>
-
-
-    <div style="margin-top:50px; margin-bottom: 10px">--------------------------------------------------------------------------</div>
-    <div class="row">
-        <h1>Add Comment to a Picture Page</h1>
-        <div class="col-md-3 col-md-offset-2">
-            <div class="thumbnail">
-                <img data-src="holder.js/300x200" src="img/pic_holder.png">
-                <div class="caption">
-                    <h4>Time: Jan-01-2015</h4>
-                    <h5>Taken by: Some Node</h5>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-5">
-            <h4>New Notes</h4>
-            <form role="form">
-                <div class="form-group">
-                    <label for="picNotes">Add notes to the image:</label>
-                    <textarea class="form-control" id="picNotes" name="picNotes" rows="3" placeholder="Enter your description for this image"></textarea>
-                </div>
-                <button type="submit" class="btn btn-default">Submit</button>
-            </form>
-        </div>
-    </div>
-
-    <div style="margin-top:50px; margin-bottom: 10px">--------------------------------------------------------------------------</div>
-    <div class="row">
-        <h1>User Registration Page</h1>
-        <div class="col-md-6 col-md-offset-3">
-            <h4>Register a User</h4>
-            <form role="form">
-                <div class="form-group">
-                    <label for="username">User Name</label>
-                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter User Name">
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password">
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email">
-                </div>
-                <div class="form-group">
-                    <label for="firstName">First Name</label>
-                    <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter First Name">
-                </div>
-                <div class="form-group">
-                    <label for="lastName">Last Name</label>
-                    <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter Last Name">
-                </div>
-                <div class="form-group">
-                    <label for="org">Organization</label>
-                    <input type="text" class="form-control" id="org" name="org" placeholder="Enter Organization">
-                </div>
-
-                <button type="submit" class="btn btn-default">Submit</button>
-            </form>
-        </div>
-    </div>
-    <div style="margin-top:50px; margin-bottom: 10px">--------------------------------------------------------------------------</div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="uwsn-viewer-navbar">
+            <ul class="nav navbar-nav">
+                <li><a href="#">Link</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">Separated link</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">One more separated link</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<div class="container" style="margin-top: 50px;">
 
 </div>
 </body>

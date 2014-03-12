@@ -5,7 +5,7 @@ class NodeImage {
     private static $tbl_name = "NodeImage";
     private static $primary_key = "NodeImageID";
 
-    private $NodeID, $Image, $NodeImageID;
+    private $NodeID, $Image, $Timestamp, $NodeImageID;
     /**
      * @var Database
      */
@@ -17,10 +17,11 @@ class NodeImage {
     }
 
 
-    static public function AddImage($image, $node_id) {
+    static public function AddImage($image, DateTime $timestamp, $node_id) {
         $db = self::getDatabase();
         $fields = array(
             "Image" => $image,
+            "Timestamp" => $timestamp->format('Y-m-d H:i:s'),
             "NodeID" => $node_id
         );
 
