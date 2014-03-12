@@ -6,14 +6,25 @@ class Node {
     private $model;
     private $NodeID, $Name, $Latitude, $Longitude, $SerialNumber, $OwnedBy, $Description, $NetworkID;
 
-    private function __construct($name, $latitude, $longitude, $serial_number, $owned_by, $node_id = NULL) {
-
+    private function __construct() {
+        $this->model = self::getDatabase();
     }
 
     static public function AddNode($name, $latitude, $longitude, $serial_number, $owned_by, $description, $network_id) {
-        // add node to DB
-        // grab new node id
-        return self::getNode($new_node_id);
+        $model = self::getDatabase();
+        $fields = array(
+            "Name" => $name,
+            "Latitude" => $latitude,
+            "Longitude" => $longitude,
+            "SerialNumber" => $serial_number,
+            "OwnedBy" => $owned_by,
+            "Description" => $description,
+            "NetworkID" => $network_id
+        );
+
+        $result = $model->save($fields);
+
+        return self::getNode($result->insert_id);
     }
 
     public function name($name = null) {
@@ -61,30 +72,40 @@ class Node {
         }
     }
 
+    public function description($decription = null) {
+        if($decription) {
+            $this->Description = $decription;
+            return $this;
+        } else {
+            return $this->Description;
+        }
+    }
+
+    public function network_id($network_id = null) {
+        if($network_id) {
+            $this->NetworkID = $network_id;
+            return $this;
+        } else {
+            return $this->NetworkID;
+        }
+    }
+
     /**
-     * @return array(NodeReading)
+     * @return NodeReading[]
      */
     public function getReadings() {
-        if(!$this->NodeID) return false;
         return NodeReading::getNodeReadings($this->NodeID);
     }
 
     /**
-     * @return array(NodeImage)
+     * @return NodeImage[]
      */
     public function getImages() {
-        if(!$this->NodeID) return false;
         return NodeImage::getImages($this->NodeID);
     }
 
     public function addReading($current, $temp, $timestamp) {
-        if(!$this->node_id) return false;
-        $node_reading = new NodeReading($current, $temp, $timestamp, $this->node_id);
-        $result = $node_reading->save();
-        if($result->success) {
-            $this->readings[] = $node_reading;
-        }
-        return $result;
+        return NodeReading::AddNodeReading($current, $temp, $timestamp, $this->NodeID);
     }
 
     public function save() {
@@ -95,10 +116,7 @@ class Node {
             "SerialNumber" => $this->serial_number(),
             "OwnedBy" => $this->owned_by()
         );
-        $result = $this->model->save($fields, $this->node_id);
-        if($result->success && !$this->node_id) {
-            $this->node_id = $result->insert_id;
-        }
+        $result = $this->model->save($fields, $this->NodeID);
         return $result;
     }
 
@@ -113,6 +131,14 @@ class Node {
         } else {
             return false;
         }
+    }
+
+    static public function getNodesInNetwork($network_id) {
+        $db = self::getDatabase();
+        $network_id = $db->sanitize($network_id);
+        $sql = "SELECT * FROM ". self::$tbl_name . " WHERE NetworkID = '$network_id'";
+        $result = $db->query($sql)->itemize(__CLASS__);
+        return $result;
     }
 
     static private function getDatabase() {

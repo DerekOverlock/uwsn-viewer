@@ -5,44 +5,57 @@ class NodeImageNote {
     private static $tbl_name = "NodeImageNote";
     private static $primary_key = "NodeImageNoteID";
 
-    private $node_image_id;
-    private $timestamp;
-    private $notes;
-    private $uid;
+    private $NodeImageID;
+    /** @var  DateTime */
+    private $Timestamp;
+    private $Notes;
+    private $UID;
 
     private $model;
 
     private $node_image_note_id;
 
-    public function __construct($notes, $uid, $timestamp, $node_image_id, $node_image_note_id = NULL) {
+    private function __construct() {
         $this->model = self::getDatabase();
+    }
 
-        $this->notes = $notes;
-        $this->timestamp = $timestamp;
-        $this->uid = $uid;
-
-        $this->node_image_note_id = $node_image_note_id;
+    /**
+     * @param $notes
+     * @param $uid
+     * @param DateTime $timestamp
+     * @param $node_image_id
+     */
+    static public function AddImageNote($notes, $uid, DateTime $timestamp, $node_image_id) {
+        $db = self::getDatabase();
+        $fields = array(
+            "Notes" => $notes,
+            "UID" => $uid,
+            "Timestamp" => $timestamp->format('Y-m-d H:i:s'),
+            "NodeImageID" => $node_image_id
+        );
+        $result = $db->save($fields);
+        return self::getImageNote($result->insert_id);
     }
 
     public function node_image_id() {
-        return $this->node_image_id;
+        return $this->NodeImageID;
     }
 
     public function uid($uid = NULL) {
         if($uid) {
-            $this->uid = $uid;
+            $this->UID = $uid;
             return $this;
         } else {
-            return $this->uid;
+            return $this->UID;
         }
     }
 
     public function notes($notes = NULL) {
         if($notes) {
-            $this->notes = $notes;
+            $this->Notes = $notes;
             return $this;
         } else {
-            return $this->notes;
+            return $this->Notes;
         }
     }
 
@@ -52,44 +65,51 @@ class NodeImageNote {
      */
     public function timestamp(DateTime $timestamp = null) {
         if($timestamp) {
-            $this->timestamp = $timestamp;
+            $this->Timestamp = $timestamp;
             return $this;
         } else {
-            return $this->timestamp;
+            return $this->Timestamp;
         }
     }
 
     public function save() {
         $fields = array(
-            "NodeImageID" => $this->node_image_id(),
-            "Notes" => $this->notes(),
-            "UID" => $this->uid(),
-            "Timestamp" => $this->timestamp()->format("YYYY-mm-dd H:i:s")
+            "NodeImageID" => $this->NodeImageID,
+            "Notes" => $this->Notes,
+            "UID" => $this->UID,
+            "Timestamp" => $this->Timestamp->format("Y-m-d H:i:s")
         );
 
         $result = $this->model->save($fields, $this->node_image_note_id);
-        if($result->success && !$this->node_image_note_id) {
-            $this->node_image_note_id = $result->insert_id;
-        }
         return $result;
     }
 
     /**
      * @param int $node_image_id
-     * @return array(NodeImageNote)
+     * @return NodeImageNote[]
      */
     public static function getImageNotes($node_image_id) {
         $db = self::getDatabase();
         $node_image_id = $db->sanitize($node_image_id);
         $sql = "SELECT * FROM ".self::$tbl_name." WHERE NodeImageID='{$node_image_id}'";
-        $items = $db->query($sql)->itemize();
-        $notes = array();
-        foreach($items as $note) {
-            $notes[] = new NodeImageNote($note->Notes, $note->UID, new DateTime($note->Timestamp), $note->NodeImageID, $note->NodeImageNoteID);
-        }
-        return $notes;
+        return $db->query($sql)->itemize(__CLASS__);
     }
 
+    /**
+     * @param int $node_image_note_id
+     * @return NodeImageNote
+     */
+    public static function getImageNote($node_image_note_id) {
+        $db = self::getDatabase();
+        $node_image_note_id = $db->sanitize($node_image_note_id);
+        $sql = "SELECT * FROM ".self::$tbl_name." WHERE NodeImageNoteID='{$node_image_note_id}'";
+        $result = $db->query($sql)->itemize(__CLASS__);
+        if($result) {
+            return $result[0];
+        } else {
+            return false;
+        }
+    }
 
     private static function getDatabase() {
         return new Database(self::$tbl_name, self::$primary_key);

@@ -7,53 +7,64 @@ class NodeReading {
     private static $primary_key = "NodeReadID";
 
     private $model;
-    private $current;
-    private $temp;
+    private $Current;
+    private $Temp;
     /**
      * @var DateTime
      */
-    private $timestamp;
-    private $node_id;
-    private $nr_id;
+    private $Timestamp;
+    private $NodeID;
+    private $NodeReadID;
 
-    public function __construct($current, $temp, $timestamp, $node_id, $nr_id = NULL) {
+    private function __construct() {
         $this->model = self::getDatabase();
-        $this->current = $current;
-        $this->temp = $temp;
-        $this->timestamp = $timestamp;
-        $this->node_id = $node_id;
-        $this->nr_id = $nr_id;
+    }
+
+    /**
+     * @param $current
+     * @param $temp
+     * @param DateTime $timestamp
+     * @param $node_id
+     * @return NodeReading
+     */
+    static public function AddNodeReading($current, $temp, $timestamp, $node_id) {
+        $db = self::getDatabase();
+        $fields = array(
+            "Current" => $current,
+            "Temp" => $temp,
+            "Timestamp" => $timestamp->format('Y-m-d H:i:s'),
+            "NodeID" => $node_id
+        );
+        $result = $db->save($fields);
+        return self::getNodeReading($result->insert_id);
     }
 
     public function save() {
         $fields = array(
-            "Current" => $this->current(),
-            "Temp" => $this->temp(),
-            "Timestamp" => $this->timestamp()->format("YYYY-mm-dd H:i:s"),
-            "NodeID" => $this->node_id()
+            "Current" => $this->Current,
+            "Temp" => $this->Temp,
+            "Timestamp" => $this->Timestamp->format("Y-m-d H:i:s"),
+            "NodeID" => $this->NodeID
         );
-        $result = $this->model->save($fields, $this->nr_id);
-        if($result->success && !$this->nr_id) {
-            $this->nr_id = $result->insert_id;
-        }
+        $result = $this->model->save($fields, $this->NodeReadID);
         return $result;
     }
 
     public function current($current = NULL) {
         if($current) {
-            $this->current = $current;
+            $this->Current = $current;
             return $this;
         } else {
-            return $this->current;
+            return $this->Current;
         }
     }
 
     public function temp($temp = NULL) {
         if($temp) {
-            $this->temp = $temp;
+            $this->Temp = $temp;
             return $this;
         } else {
-            return $this->temp;
+            return $this->Temp;
         }
     }
 
@@ -63,36 +74,47 @@ class NodeReading {
      */
     public function timestamp(DateTime $timestamp = NULL) {
         if($timestamp) {
-            $this->timestamp = $timestamp;
+            $this->Timestamp = $timestamp;
             return $this;
         } else {
-            return $this->timestamp;
+            return $this->Timestamp;
         }
     }
 
     public function node_id($node_id = NULL) {
         if($node_id) {
-            $this->node_id = $node_id;
+            $this->NodeID = $node_id;
             return $this;
         } else {
-            return $this->node_id;
+            return $this->NodeID;
         }
     }
 
     /**
      * @param $node_id
-     * @return array(NodeReading)
+     * @return NodeReading[]
      */
     static public function getNodeReadings($node_id) {
         $db = self::getDatabase();
         $node_id = $db->sanitize($node_id);
         $sql = "SELECT * FROM ".self::$tbl_name." WHERE NodeID = '".$node_id."'";
-        $result = $db->query($sql)->itemize();
-        $readings[] = array();
-        foreach($result as $reading) {
-            $readings[] = new NodeReading($reading->Current, $reading->Temp, new DateTime($reading->Timestamp), $reading->NodeID);
+        return $db->query($sql)->itemize(__CLASS__);
+    }
+
+    /**
+     * @param $node_id
+     * @return NodeReading
+     */
+    static public function getNodeReading($nr_id) {
+        $db = self::getDatabase();
+        $nr_id = $db->sanitize($nr_id);
+        $sql = "SELECT * FROM ".self::$tbl_name." WHERE NodeReadID = '".$nr_id."'";
+        $result = $db->query($sql)->itemize(__CLASS__);
+        if($result) {
+            return $result[0];
+        } else {
+            return false;
         }
-        return $readings;
     }
 
     static private function getDatabase() {
