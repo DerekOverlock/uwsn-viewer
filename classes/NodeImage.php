@@ -6,7 +6,9 @@ class NodeImage {
     private static $primary_key = "NodeImageID";
 
     private $NodeID, $Image, $NodeImageID;
-
+    /**
+     * @var Database
+     */
     private $model;
 
 
@@ -45,8 +47,7 @@ class NodeImage {
             "Image" => $this->Image
         );
 
-        $result = $this->model->save($fields, $this->NodeImageID);
-        return $result;
+        return $this->model->save($fields, $this->NodeImageID);
     }
 
     /**
@@ -83,7 +84,9 @@ class NodeImage {
         }
     }
 
-
+    /**
+     * @return Database
+     */
     private static function getDatabase() {
         return new Database(self::$tbl_name, self::$primary_key);
     }
