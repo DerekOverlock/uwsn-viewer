@@ -1,121 +1,73 @@
 <?php
-class Node {
+class NodeNetwork {
     private static $tbl_name = "NodeNetwork";
     private static $primary_key = "NetworkID";
 
     private $model;
-    private $name;
-    private $latitude;
-    private $longitude;
-    private $serial_number;
-    private $owned_by;
+    private $Name, $Description, $NetworkID;
 
-    private $node_id;
-
-    public function __construct($name, $latitude, $longitude, $serial_number, $owned_by, $node_id = NULL) {
+    private function __construct() {
         $this->model = self::getDatabase();
-        $this->name = $name;
-        $this->latitude = $latitude;
-        $this->longitude = $longitude;
-        $this->serial_number = $serial_number;
-        $this->owned_by = $owned_by;
-        $this->node_id = $node_id;
+    }
+
+    static public function AddNetwork($name, $description) {
+        $db = self::getDatabase();
+        $fields = array(
+            "Name" => $name,
+            "Description" => $description
+        );
+        $result = $db->save($fields);
+        return self::getNetwork($result->insert_id);
     }
 
     public function name($name = null) {
         if($name) {
-            $this->name = $name;
+            $this->Name = $name;
             return $this;
         } else {
-            return $this->name;
+            return $this->Name;
         }
     }
 
-    public function latitude($latitude = null) {
-        if($latitude) {
-            $this->latitude = $latitude;
+    public function description($description = null) {
+        if($description) {
+            $this->Description = $description;
             return $this;
         } else {
-            return $this->latitude;
+            return $this->Description;
         }
-    }
-
-    public function longitude($longitude = null) {
-        if($longitude) {
-            $this->longitude = $longitude;
-            return $this;
-        } else {
-            return $this->longitude;
-        }
-    }
-
-    public function serial_number($serial_number = null) {
-        if($serial_number) {
-            $this->serial_number = $serial_number;
-            return $this;
-        } else {
-            return $this->serial_number;
-        }
-    }
-
-    public function owned_by($owned_by = null) {
-        if($owned_by) {
-            $this->owned_by = $owned_by;
-            return $this;
-        } else {
-            return $this->owned_by;
-        }
-    }
-
-    /**
-     * @return array(NodeReading)
-     */
-    public function getReadings() {
-        if(!$this->node_id) return false;
-        return NodeReading::getNodeReadings($this->node_id);
-    }
-
-    /**
-     * @return array(NodeImage)
-     */
-    public function getImages() {
-        if(!$this->node_id) return false;
-        return NodeImage::getImages($this->node_id);
-    }
-
-    public function addReading($current, $temp, $timestamp) {
-        if(!$this->node_id) return false;
-        $node_reading = new NodeReading($current, $temp, $timestamp, $this->node_id);
-        $result = $node_reading->save();
-        if($result->success) {
-            $this->readings[] = $node_reading;
-        }
-        return $result;
     }
 
     public function save() {
         $fields = array(
-            "Name" => $this->name(),
-            "Latitude" => $this->latitude(),
-            "Longitude" => $this->longitude(),
-            "SerialNumber" => $this->serial_number(),
-            "OwnedBy" => $this->owned_by()
+            "Name" => $this->Name,
+            "Description" => $this->Description
         );
-        $result = $this->model->save($fields, $this->node_id);
-        if($result->success && !$this->node_id) {
-            $this->node_id = $result->insert_id;
-        }
+        $result = $this->model->save($fields, $this->NetworkID);
+
         return $result;
     }
 
-    static public function getNode($node_id) {
+    /**
+     * @return NodeNetwork[]
+     */
+    static public function getNetworks() {
         $db = self::getDatabase();
-        $node_id = $db->sanitize($node_id);
-        $sql = "SELECT * FROM ". self::$tbl_name . " WHERE NodeID = '$node_id'";
-        $result = $db->query($sql)->itemize();
+        $sql = "SELECT * FROM ". self::$tbl_name . " ORDER BY Name";
+        return $db->query($sql)->itemize(__CLASS__);
+    }
+
+    /**
+     * @param $network_id
+     * @return bool
+     */
+    static public function getNetwork($network_id) {
+        $db = self::getDatabase();
+        $network_id = $db->sanitize($network_id);
+        $sql = "SELECT * FROM ". self::$tbl_name . " WHERE NetworkID = '$network_id' ORDER BY Name";
+        $result = $db->query($sql)->itemize(__CLASS__);
         if($result) {
-            $node = $result[0];
-            return new Node($node->Name, $node->Latitude, $node->Longitude, $node->SerialNumber, $node->OwnedBy, $node->NodeID);
+            return $result[0];
         } else {
             return false;
         }

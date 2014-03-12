@@ -13,7 +13,7 @@ class NodeImageNote {
 
     private $model;
 
-    private $node_image_note_id;
+    private $NodeImageNoteID;
 
     private function __construct() {
         $this->model = self::getDatabase();
@@ -80,7 +80,7 @@ class NodeImageNote {
             "Timestamp" => $this->Timestamp->format("Y-m-d H:i:s")
         );
 
-        $result = $this->model->save($fields, $this->node_image_note_id);
+        $result = $this->model->save($fields, $this->NodeImageNoteID);
         return $result;
     }
 

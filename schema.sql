@@ -8,6 +8,8 @@ USE `uwsn_viewer` ;
 -- -----------------------------------------------------
 -- Table `uwsn_viewer`.`User`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `uwsn_viewer`.`User` ;
+
 CREATE TABLE IF NOT EXISTS `uwsn_viewer`.`User` (
   `UID` INT NOT NULL AUTO_INCREMENT,
   `FirstName` VARCHAR(45) NOT NULL,
@@ -20,8 +22,23 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
+-- Table `uwsn_viewer`.`NodeNetwork`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `uwsn_viewer`.`NodeNetwork` ;
+
+CREATE TABLE IF NOT EXISTS `uwsn_viewer`.`NodeNetwork` (
+  `NetworkID` INT NOT NULL AUTO_INCREMENT,
+  `Name` VARCHAR(200) NULL,
+  `Description` TEXT NULL,
+  PRIMARY KEY (`NetworkID`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
 -- Table `uwsn_viewer`.`Node`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `uwsn_viewer`.`Node` ;
+
 CREATE TABLE IF NOT EXISTS `uwsn_viewer`.`Node` (
   `NodeID` INT NOT NULL AUTO_INCREMENT,
   `Name` VARCHAR(45) NULL,
@@ -29,13 +46,23 @@ CREATE TABLE IF NOT EXISTS `uwsn_viewer`.`Node` (
   `Longitude` FLOAT(10,6) NULL,
   `SerialNumber` VARCHAR(45) NULL,
   `OwnedBy` VARCHAR(200) NULL,
-  PRIMARY KEY (`NodeID`))
+  `Description` TEXT NULL,
+  `NetworkID` INT NULL,
+  PRIMARY KEY (`NodeID`),
+  INDEX `FK_NodeNetwork_idx` (`NetworkID` ASC),
+  CONSTRAINT `FK_NodeNetwork`
+    FOREIGN KEY (`NetworkID`)
+    REFERENCES `uwsn_viewer`.`NodeNetwork` (`NetworkID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
 -- Table `uwsn_viewer`.`NodeReading`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `uwsn_viewer`.`NodeReading` ;
+
 CREATE TABLE IF NOT EXISTS `uwsn_viewer`.`NodeReading` (
   `NodeReadID` INT NOT NULL AUTO_INCREMENT,
   `NodeID` INT NOT NULL,
@@ -55,6 +82,8 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `uwsn_viewer`.`NodeImage`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `uwsn_viewer`.`NodeImage` ;
+
 CREATE TABLE IF NOT EXISTS `uwsn_viewer`.`NodeImage` (
   `NodeImageID` INT NOT NULL AUTO_INCREMENT,
   `NodeID` INT NOT NULL,
@@ -72,6 +101,8 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `uwsn_viewer`.`NodeImageNote`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `uwsn_viewer`.`NodeImageNote` ;
+
 CREATE TABLE IF NOT EXISTS `uwsn_viewer`.`NodeImageNote` (
   `NodeImageNoteID` INT NOT NULL,
   `NodeImageID` INT NOT NULL,
@@ -91,6 +122,16 @@ CREATE TABLE IF NOT EXISTS `uwsn_viewer`.`NodeImageNote` (
     REFERENCES `uwsn_viewer`.`User` (`UID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `uwsn_viewer`.`NodesInNetwork`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `uwsn_viewer`.`NodesInNetwork` ;
+
+CREATE TABLE IF NOT EXISTS `uwsn_viewer`.`NodesInNetwork` (
+)
 ENGINE = InnoDB;
 
 
