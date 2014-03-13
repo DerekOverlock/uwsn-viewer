@@ -25,7 +25,7 @@ require_once PHP_LIB . "/User.php";
         });
 
         function init() {
-            new app.ManageNetworkView({el: $("div.container")});
+            new app.ManageNetworkView({el: $("div.container"), model: new app.Models.NodeNetwork({id: 1})});
         }
     </script>
 </head>

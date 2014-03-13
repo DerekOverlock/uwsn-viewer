@@ -1,18 +1,36 @@
 var app = app || {};
 
 app.ManageNetworkView = Backbone.View.extend({
+
     initialize: function() {
         this.render();
+        this.listenTo(this.model, 'change', this.render)
+    },
+    template: function(optViewParam) {
+        var param = optViewParam || {};
+        return Mustache.render(app.TemplateManager.getTemplate('manage_network'), param);
     },
     events: {
 
     },
     render: function() {
-        this.$el.append(
-            Mustache.render(
-                app.TemplateManager.getTemplate('manage_network'),
-                {}
+        this.$el.html(
+            this.template(
+                this.model.toJSON()
             )
         );
     }
+});
+
+app.Models = app.Models || {};
+app.Models.NodeNetwork = Backbone.Model.extend({
+    initialize: function(attr, options) {
+        if(this.id) {
+            this.fetch();
+        }
+    },
+    url: function() {
+        return this.urlRoot + '?id='+this.id;
+    },
+    urlRoot: 'scripts/getNetwork.php'
 });
