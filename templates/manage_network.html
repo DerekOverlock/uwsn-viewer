@@ -1,6 +1,6 @@
 <div class="col-md-6 col-md-offset-3">
     <h4>Manage Network</h4>
-    <form role="form">
+    <form>
         <div class="form-group">
             <label for="networkName">Network Name</label>
             <input type="text" class="form-control" id="networkName" name="networkName" placeholder="Network Name" value="{{Name}}" />
@@ -13,6 +13,6 @@
         {{#NetworkID}}
         <input type="hidden" name="networkID" value="{{NetworkID}}" />
         {{/NetworkID}}
-        <button class="btn btn-default">Submit</button>
+        <button type="button" class="btn btn-default">Submit</button>
     </form>
 </div>
