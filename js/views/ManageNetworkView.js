@@ -4,7 +4,8 @@ app.ManageNetworkView = Backbone.View.extend({
 
     initialize: function() {
         this.render();
-        this.listenTo(this.model, 'change', this.render)
+        this.listenTo(this.model, 'change', this.render);
+        this.model.fetch();
     },
     template: function(optViewParam) {
         var param = optViewParam || {};
@@ -25,9 +26,7 @@ app.ManageNetworkView = Backbone.View.extend({
 app.Models = app.Models || {};
 app.Models.NodeNetwork = Backbone.Model.extend({
     initialize: function(attr, options) {
-        if(this.id) {
-            this.fetch();
-        }
+
     },
     url: function() {
         return this.urlRoot + '?id='+this.id;
