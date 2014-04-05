@@ -1,55 +1,50 @@
 <?php
+require_once __DIR__ . "/../config.inc.php";
+require_once PHP_LIB . "/Database.php";
+
 class NodeNetwork {
     private static $tbl_name = "NodeNetwork";
-    private static $primary_key = "NetworkID";
+    private static $primary_key = "NetworkId";
 
     private $model;
-    private $Name, $Description, $NetworkID;
+    private $Name, $NetworkId;
 
     private function __construct() {
         $this->model = self::getDatabase();
     }
 
-    static public function AddNetwork($name, $description) {
+    /**
+     * @param $name
+     * @return NodeNetwork
+     */
+    static public function AddNetwork($name) {
         $db = self::getDatabase();
         $fields = array(
-            "Name" => $name,
-            "Description" => $description
+            "Name" => $name
         );
         $result = $db->save($fields);
         return self::getNetwork($result->insert_id);
     }
 
-    public function name($name = null) {
-        if($name) {
-            $this->Name = $name;
-            return $this;
-        } else {
-            return $this->Name;
-        }
+    public function getName() {
+        return $this->Name;
     }
 
-    public function description($description = null) {
-        if($description) {
-            $this->Description = $description;
-            return $this;
-        } else {
-            return $this->Description;
-        }
+    public function getId() {
+        return $this->NetworkId;
     }
 
     public function save() {
         $fields = array(
-            "Name" => $this->Name,
-            "Description" => $this->Description
+            "Name" => $this->Name
         );
-        $result = $this->model->save($fields, $this->NetworkID);
+        $result = $this->model->save($fields, $this->NetworkId);
 
         return $result;
     }
 
     public function getNodesInNetwork() {
-        return Node::getNodesInNetwork($this->NetworkID);
+        return Node::getNodesInNetwork($this->NetworkId);
     }
 
     /**
@@ -68,7 +63,7 @@ class NodeNetwork {
     static public function getNetwork($network_id) {
         $db = self::getDatabase();
         $network_id = $db->sanitize($network_id);
-        $sql = "SELECT * FROM ". self::$tbl_name . " WHERE NetworkID = '$network_id' ORDER BY Name";
+        $sql = "SELECT * FROM ". self::$tbl_name . " WHERE NetworkId = '$network_id' ORDER BY Name";
         $result = $db->query($sql)->itemize(__CLASS__);
         if($result) {
             return $result[0];
