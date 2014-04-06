@@ -45,13 +45,17 @@ class Node {
         return $this->Longitude;
     }
 
-    public function getGPSCoordinates() {
+    public function getCoordinates() {
         return $this->gps;
     }
 
 
     public function getNetworkId() {
         return $this->NetworkId;
+    }
+
+    public function getId() {
+        return $this->NodeId;
     }
 
     public function save() {
@@ -66,6 +70,10 @@ class Node {
         return $result;
     }
 
+    /**
+     * @param $node_id
+     * @return Node
+     */
     static public function getNode($node_id) {
         $db = self::getDatabase();
         $node_id = $db->sanitize($node_id);
@@ -79,6 +87,10 @@ class Node {
         }
     }
 
+    /**
+     * @param $network_id
+     * @return Node[]
+     */
     static public function getNodesInNetwork($network_id) {
         $db = self::getDatabase();
         $network_id = $db->sanitize($network_id);
