@@ -5,8 +5,12 @@ require_once PHP_LIB . "/NodeTest.php";
 class RMacTest {
     /** @var NodeTest */
     private $test;
+    private $traceFile = "rmac.tr";
+    private $testFile = "rmac.tcl";
 
     public function __construct(NodeTest $test) {
+        $this->testFile = TEST_DIR . "/rmac.tcl";
+        $this->traceFile = TEST_DIR . "/rmac.tr";
         $this->test = $test;
     }
 
@@ -62,7 +66,7 @@ set opt(z)                          $depth
 set opt(seed)	                	348.88
 set opt(stop)	                	1000	;# simulation time
 set opt(prestop)                        20     ;# time to prepare to stop
-set opt(tr)	                	"rmac.tr"	;# trace file
+set opt(tr)	                	"$this->traceFile"	;# trace file
 set opt(nam)                            "rmac.nam"  ;# nam file
 set opt(adhocRouting)                    Vectorbasedforward
 set opt(width)                           20
@@ -173,7 +177,7 @@ global defaultRNG
 		 #-channelType \$opt(chan) \
 		 -agentTrace OFF \
                  -routerTrace OFF \
-                 -macTrace ON\
+                 -macTrace ON \
                  -topoInstance \$topo\
                  -energyModel \$opt(energy)\
                  -txpower \$opt(txpower)\
@@ -187,7 +191,6 @@ HEADER;
 
     public function getTestBody() {
         ob_start();
-        echo "\n\n";
         $i = 0;
         foreach($this->test->getTestNodes() as $testNode) {
 ?>
@@ -231,7 +234,6 @@ $a_(<?=$i;?>) set data_rate_ 0.05
 <?php
             $i++;
         }
-        echo "\n";
         return ob_get_clean();
     }
 
@@ -278,6 +280,37 @@ $ns_ run
 <?php
         return ob_get_clean();
     }
+
+    public function writeTest() {
+        $this->testFile = self::getTestFilename();
+        $fh = fopen($this->testFile, "w");
+        fwrite($fh, $this->getTestHeader());
+        fwrite($fh, "\n\n");
+        fwrite($fh, $this->getTestBody());
+        fwrite($fh, "\n\n");
+        fwrite($fh, $this->getTestFooter());
+        fclose($fh);
+        chmod($this->testFile, 0666);
+        return $this->testFile;
+    }
+
+    public function runTest() {
+        $this->writeTest();
+        $command = "ns " . $this->testFile;
+        echo $command . "\n";
+        ob_start();
+        $resultCode = system("ns " . $this->testFile);
+        $result = ob_get_clean();
+        echo $resultCode . "\n";
+        echo "Done running test. NS response: " . $resultCode . "\n";
+        echo file_get_contents($this->traceFile);
+        unlink($this->traceFile);
+    }
+
+    static private function getTestFilename() {
+        $fileName = tempnam(TEST_DIR, "test_");
+        return $fileName;
+    }
 }
 
 header('Content-type: text/plain');
@@ -289,8 +322,6 @@ Node::AddNode("Test4", 30.59654766, -87.97576904, -3, 1);
 Node::AddNode("Test5", 37.10776507, 124.14550781, -70, 1);
 */
 
-$t = new RMacTest(new NodeTest(1, 3));
+$t = new RMacTest(new NodeTest(1, 1));
 
-echo $t->getTestHeader();
-echo $t->getTestBody();
-echo $t->getTestFooter();
+$t->runTest();
