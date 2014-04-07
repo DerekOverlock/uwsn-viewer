@@ -5,12 +5,16 @@ require_once PHP_LIB . "/NodeTest.php";
 class RMacTest {
     /** @var NodeTest */
     private $test;
-    private $traceFile = "rmac.tr";
-    private $testFile = "rmac.tcl";
+    private $traceFile = "test.tr";
+    private $testFile = "test.tcl";
+    private $testName = "test";
+    private $namFile = "test.nam";
+    private $resultFile = "test.out";
+    private $largePacket = 480;
 
     public function __construct(NodeTest $test) {
-        $this->testFile = TEST_DIR . "/rmac.tcl";
-        $this->traceFile = TEST_DIR . "/rmac.tr";
+        $this->testFile = TEST_DIR . "/test.tcl";
+        $this->traceFile = TEST_DIR . "/test.tr";
         $this->test = $test;
     }
 
@@ -49,7 +53,7 @@ set opt(PhaseTwo_interval)            0.5
 set opt(IntervalPhase2Phase3)         1
 set opt(duration)                     0.1
 set opt(PhyOverhead)                  8
-set opt(large_packet_size)            480 ;# 60 bytes
+set opt(large_packet_size)            $this->largePacket; ;# 60 bytes
 set opt(short_packet_size)            40  ;# 5 bytes
 set opt(PhaseOne_cycle)               4 ;
 set opt(PhaseTwo_cycle)               2 ;
@@ -67,12 +71,11 @@ set opt(seed)	                	348.88
 set opt(stop)	                	1000	;# simulation time
 set opt(prestop)                        20     ;# time to prepare to stop
 set opt(tr)	                	"$this->traceFile"	;# trace file
-set opt(nam)                            "rmac.nam"  ;# nam file
+set opt(nam)                    "$this->namFile"    ;# nam file
 set opt(adhocRouting)                    Vectorbasedforward
 set opt(width)                           20
 set opt(adj)                             10
 set opt(interval)                        0.001
-#set opt(traf)	                	"diffusion-traf.tcl"      ;# traffic file
 
 # ==================================================================
 
@@ -282,7 +285,10 @@ $ns_ run
     }
 
     public function writeTest() {
-        $this->testFile = self::getTestFilename();
+        $this->testName = self::getTestName();
+        $this->testFile = TEST_DIR . "/" . $this->testName . ".tcl";
+        $this->traceFile = TEST_DIR . "/" . $this->testName . ".tr";
+        $this->namFile = TEST_DIR . "/" . $this->testName . ".nam";
         $fh = fopen($this->testFile, "w");
         fwrite($fh, $this->getTestHeader());
         fwrite($fh, "\n\n");
@@ -297,31 +303,198 @@ $ns_ run
     public function runTest() {
         $this->writeTest();
         $command = "ns " . $this->testFile;
-        echo $command . "\n";
         ob_start();
         $resultCode = system("ns " . $this->testFile);
         $result = ob_get_clean();
-        echo $resultCode . "\n";
-        echo "Done running test. NS response: " . $resultCode . "\n";
-        echo file_get_contents($this->traceFile);
-        unlink($this->traceFile);
+        $this->resultFile = TEST_DIR . "/" . $this->testName . ".out";
+        file_put_contents($this->resultFile, $result);
+        return new RMacTestResult($this->testFile, $this->traceFile, $this->namFile, $this->resultFile);
     }
 
-    static private function getTestFilename() {
-        $fileName = tempnam(TEST_DIR, "test_");
-        return $fileName;
+    static private function getTestName($length = 10) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, strlen($characters) - 1)];
+        }
+        if(file_exists(TEST_DIR . "/" . $randomString . ".tcl")) return self::getTestName();
+        else return $randomString;
     }
 }
 
+class RMacTestResult {
+    public $tclFile;
+    public $traceFile;
+    public $namFile;
+    public $resultFile;
+
+    public function __construct($tclFile, $traceFile, $namFile, $resultFile) {
+        $this->tclFile = $tclFile;
+        $this->traceFile = $traceFile;
+        $this->namFile = $namFile;
+        $this->resultFile = $resultFile;
+    }
+}
+
+class TraceFileParser {
+
+    public $traceFile;
+    /** @var resource */
+    public $traceFh;
+
+    public function __construct($traceFile) {
+        $this->traceFile = $traceFile;
+        $this->traceFh = fopen($this->traceFile, "r");
+        if(!$this->traceFh) throw new Exception("Cannot open $this->traceFile");
+    }
+
+    /**
+     * @return TracePacket[]
+     */
+    public function parse() {
+        /** @var TracePacket[] $tracePackets */
+        $tracePackets = array();
+        /**
+         * 1 - Trace Event Type
+         * 2 - Time
+         * 3 - Node ID
+         * 4 - Level
+         * 5 - Packet ID
+         * 6 - Payload Type
+         * 7 - Packet Size
+         * 8 - MAC delay
+         * 9 - Destination MAC address
+         * 10 - Source MAC address
+         * 11 - Ethernet Type Packet
+         * 12 - energy
+         * 13 - idle energy
+         * 14 - sense energy
+         * 15 - transmitting energy
+         * 16 - receiving energy
+         * 17 - source IP
+         * 18 - source Port
+         * 19 - destination IP
+         * 20 - destination Port
+         * 21 - TTL
+         * 22 - Next Hop Addr
+         */
+        $pattern = "/^([a-zA-Z])\s+(\d+\.?\d*)\s+_(\d)_\s+(\w*)\s+---\s+(\d+)\s+(\w+)\s+(\d+)\s+\[(\d+)\s+(\d+)\s+([0-9a-fA-F]+)\s+(\d+)\]\s+\[energy\s+(\d+\.\d+)\s+ei\s+(\d+\.\d+)\s+es\s+(\d+\.\d+)\s+et\s+(\d+\.\d+)\s+er\s+(\d+\.\d+)\]\s+-------\s+\[(\d+):(\d+)\s+(\d+):(\d+)\s+(\d+)\s+(\d+)\]$/";
+        while(($line = fgets($this->traceFh)) !== false) {
+            $m = array();
+            $line = trim($line);
+            if($line[0] == "M" || $line[0] == "N" || $line[0] == "v") continue;
+            preg_match($pattern, $line, $m);
+            array_shift($m);
+            if($m[6] <= 40) continue;
+            $tracePackets[] = new TracePacket($m[0], $m[1], $m[2], $m[3], $m[4], $m[5], $m[6], $m[7], $m[8], $m[9], $m[10], $m[11], $m[12], $m[13], $m[14], $m[15], $m[16], $m[17], $m[18], $m[19], $m[20], $m[21]);
+        }
+        return $tracePackets;
+    }
+
+}
+
+class TracePacket {
+
+    public $eventType;
+    public $time;
+    public $nodeId;
+    public $level;
+    public $packetId;
+    public $payloadType;
+    public $packetSize;
+    public $macDelay;
+    public $destMac;
+    public $sourceMac;
+    public $ethernetType;
+    private $energy;
+    private $idleEnergy;
+    private $senseEnergy;
+    private $transmitEnergy;
+    private $receiveEnergy;
+    public $sourceIp;
+    public $sourcePort;
+    public $destIp;
+    public $destPort;
+    public $ttl;
+    public $nextHop;
+
+    public function __construct($eventType, $time, $nodeId, $level, $packetId, $payloadType, $packetSize, $macDelay, $destMac, $sourceMac, $ethernetType, $energy, $idleEnergy, $senseEnergy, $transmitEnergy, $receiveEnergy, $sourceIp, $sourcePort, $destIp, $destPort, $ttl, $nextHop) {
+        $this->eventType = $eventType;
+        $this->time = $time;
+        $this->nodeId = $nodeId;
+        $this->level = $level;
+        $this->packetId = $packetId;
+        $this->payloadType = $payloadType;
+        $this->packetSize = $packetSize;
+        $this->macDelay = $macDelay;
+        $this->destMac = $destMac;
+        $this->sourceMac = $sourceMac;
+        $this->ethernetType = $ethernetType;
+        $this->energy = $energy;
+        $this->idleEnergy = $idleEnergy;
+        $this->senseEnergy = $senseEnergy;
+        $this->transmitEnergy = $transmitEnergy;
+        $this->receiveEnergy = $receiveEnergy;
+        $this->sourceIp = $sourceIp;
+        $this->sourcePort = $sourcePort;
+        $this->destIp = $destIp;
+        $this->destPort = $destPort;
+        $this->ttl = $ttl;
+        $this->nextHop = $nextHop;
+
+    }
+}
+
+class TracePacketTransaction {
+
+    /** @var TracePacket */
+    public $sentPacket = null;
+    /** @var TracePacket  */
+    public $receivePacket = "hi";
+    public $transactionTime;
+    public $rate;
+    public $packetId;
+    public $packetSize;
+    public $senderNode;
+
+    public function addSentPacket(TracePacket $sent) {
+        $this->sentPacket = $sent;
+        $this->packetId = $this->sentPacket->packetId;
+        $this->packetSize = $this->sentPacket->packetSize;
+        $this->senderNode = $this->sentPacket->nodeId;
+    }
+
+    public function addReceivePacket(TracePacket $receive) {
+        $this->receivePacket = $receive;
+        if($this->sentPacket != null) {
+            $this->calculate();
+        }
+    }
+
+    private function calculate() {
+        $this->transactionTime = ($this->receivePacket->time-$this->sentPacket->time);
+        $this->rate = $this->packetSize/$this->transactionTime / 1024;
+    }
+
+}
+
+/** @var TracePacketTransaction[] $ar */
+$ar = array();
+
+
 header('Content-type: text/plain');
-/*
-$network = NodeNetwork::AddNetwork("Test");
-Node::AddNode("Test1", 30.6343672, -88.04168701, -1, $network->getId());
-Node::AddNode("Test2", 30.66035957, -88.01147461, -1, $network->getId());
-Node::AddNode("Test4", 30.59654766, -87.97576904, -3, 1);
-Node::AddNode("Test5", 37.10776507, 124.14550781, -70, 1);
-*/
+$t = new RMacTest(new NodeTest(2, 8));
+$testResult = $t->runTest();
+$parser = new TraceFileParser($testResult->traceFile);
+$packets = $parser->parse();
 
-$t = new RMacTest(new NodeTest(1, 1));
-
-$t->runTest();
+foreach($packets as $packet) {
+    $id = $packet->packetId;
+    if(!isset($ar[$id])) $ar[$id] = new TracePacketTransaction();
+    if($packet->eventType == 's') {
+        $ar[$id]->addSentPacket($packet);
+    } else if($packet->eventType == 'r') {
+       $ar[$id]->addReceivePacket($packet);
+    }
+}
+echo json_encode($ar);

@@ -77,4 +77,9 @@ class NodeNetwork {
     }
 
 
-} 
+}
+
+/*
+$network = NodeNetwork::AddNetwork("Test");
+$network->getId();
+*/

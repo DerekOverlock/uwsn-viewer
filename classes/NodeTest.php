@@ -89,9 +89,9 @@ class SimpleNode {
     public function __construct($nodeId, $name, $x, $y, $z) {
         $this->nodeId = $nodeId;
         $this->nodeName = $name;
-        $this->x = round($x);
-        $this->y = round($y);
-        $this->z = round($z);
+        $this->x = round($x, 2);
+        $this->y = round($y, 2);
+        $this->z = round($z, 2);
     }
 
 }
