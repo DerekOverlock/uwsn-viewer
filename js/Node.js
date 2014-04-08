@@ -49,10 +49,9 @@ app.LController.addElevationListener = function(node) {
 // Define NodeLib functions
 app.NodeLib = {};
 
-app.NodeLib.getNodesInNetwork = function() {
-    var networkID = 1; //todo
+app.NodeLib.getNodesInNetwork = function(networkID) {
     $.get(app.SERVER+"/scripts/getNodesInNetwork.php?networkId="+networkID, function(result){
-
+        console.log(result);
     });
 };
 
@@ -92,19 +91,18 @@ app.NodeLib.getElevationByLatLng = function(lat, lng) {
 };
 
 app.NodeLib.makeNewNode = function(location) {
-    $.post(app.SERVER, {method:'addNode', lat:location.lat(), lng: location.lng()}, function(result){
-        if(result.success) {
-            var nodeID = result.nodeID;
-            var node = new google.maps.Marker({
-                position: location,
-                draggable:true,
-                map: app.map,
-                nodeID: nodeID
-            });
-            app.nodes[nodeID] = (node);
-        } else {
-            alert('Cannot talk to the server');
-        }
+    $.post(app.SERVER, {lat:location.lat(), lng: location.lng()}, function(result){
+        //var nodeID = result.nodeID;
+        // todo
+        var nodeID = 1;
+        var node = new google.maps.Marker({
+            position: location,
+            draggable:true,
+            map: app.map,
+            nodeID: nodeID
+        });
+        app.nodes[nodeID] = (node);
+        app.LController.addElevationListener(app.nodes[nodeID]);
     });
 };
 

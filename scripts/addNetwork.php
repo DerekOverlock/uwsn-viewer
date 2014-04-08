@@ -1,18 +1,17 @@
 <?php
-//require_once __DIR__ . "/../config.inc.php";
-//require_once PHP_LIB . "/NodeNetwork.php";
+require_once __DIR__ . "/../config.inc.php";
+require_once PHP_LIB . "/NodeNetwork.php";
 
 $name = $_POST['NetworkName'];
 
-//$network = NodeNetwork::AddNetwork($name);
+$network = NodeNetwork::AddNetwork($name);
 
 $return = new stdClass();
-//$return->networkID = $network->getId();
-$return->networkID = 1;
+$return->networkID = $network->getId();
 $return->networkName = $name;
 
 header("Content-Type: json/application");
-
+//test
 echo json_encode($return);
 
 /**
