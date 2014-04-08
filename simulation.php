@@ -17,7 +17,7 @@
     <style type="text/css">
         html { height: 100% }
         body { height: 100%;}
-        #map-canvas { height: 80%; width: 80%; margin-left: 2%}
+        #map-canvas { height: 100%; width: 70%; margin-left: 15%}
     </style>
 
 </head>
@@ -25,10 +25,18 @@
 <body>
     <div class="container">
         <h2>UWSN Simulator</h2>
+        <h4>NetworkID: <?=$_GET['networkID'];?></h4>
+
+        <h4>Node List:</h4>
+        <div class="col-sm-5" style="margin-bottom: 15px">
+        <select multiple class="form-control ">
+            <option>Node 1</option>
+            <option>Node 2</option>
+
+        </select>
+        </div>
     </div>
-    <div id="map-canvas" style="float: left"></div>
-    <div style="float: left"><h5>Node List:</h5></div>
-    <div style="clear:both"></div>
+    <div id="map-canvas"></div>
     <div id="sim-box" class="container" style="margin-top: 20px">
         <form class="form-inline" role="form">
             <div class="form-group">
@@ -38,8 +46,9 @@
             <button type="button" class="btn btn-sm btn-primary" id="start_sim_btn">Start</button>
         </form>
     </div>
-    <div id="simulation-result-box" class="container" style="min-height: 200px; margin-top: 20px; border-style:solid; border-color:red;">
+    <div id="simulation-result-box" class="container">
         <h3>Result Console:</h3>
+        <textarea class="form-control" rows="5"></textarea>
     </div>
 </body>
 

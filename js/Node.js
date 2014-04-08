@@ -1,6 +1,6 @@
 var app = {};
 
-app.SERVER = 'router.php';
+app.SERVER = '/uwsn-viewer';
 
 $(function(){
     google.maps.event.addDomListener(window, 'load', app.Init);
@@ -51,7 +51,7 @@ app.NodeLib = {};
 
 app.NodeLib.getNodesInNetwork = function() {
     var networkID = 1; //todo
-    $.get("/scripts/getNodesInNetwork.php?networkId="+networkID, function(result){
+    $.get(app.SERVER+"/scripts/getNodesInNetwork.php?networkId="+networkID, function(result){
 
     });
 };
