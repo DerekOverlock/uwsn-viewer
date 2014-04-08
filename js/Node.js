@@ -49,6 +49,13 @@ app.LController.addElevationListener = function(node) {
 // Define NodeLib functions
 app.NodeLib = {};
 
+app.NodeLib.getNodesInNetwork = function() {
+    var networkID = 1; //todo
+    $.get("/scripts/getNodesInNetwork.php?networkId="+networkID, function(result){
+
+    });
+};
+
 app.NodeLib.getElevation = function(event) {
     var locations = [];
 
@@ -79,6 +86,9 @@ app.NodeLib.getElevation = function(event) {
             alert('Elevation service failed due to: ' + status);
         }
     });
+};
+app.NodeLib.getElevationByLatLng = function(lat, lng) {
+    var locations = [];
 };
 
 app.NodeLib.makeNewNode = function(location) {
