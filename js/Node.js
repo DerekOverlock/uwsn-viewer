@@ -1,6 +1,6 @@
 var app = {};
 
-app.SERVER = 'router.php';
+app.SERVER = '/uwsn-viewer';
 
 $(function(){
     google.maps.event.addDomListener(window, 'load', app.Init);
@@ -49,6 +49,12 @@ app.LController.addElevationListener = function(node) {
 // Define NodeLib functions
 app.NodeLib = {};
 
+app.NodeLib.getNodesInNetwork = function(networkID) {
+    $.get(app.SERVER+"/scripts/getNodesInNetwork.php?networkId="+networkID, function(result){
+        console.log(result);
+    });
+};
+
 app.NodeLib.getElevation = function(event) {
     var locations = [];
 
@@ -80,21 +86,23 @@ app.NodeLib.getElevation = function(event) {
         }
     });
 };
+app.NodeLib.getElevationByLatLng = function(lat, lng) {
+    var locations = [];
+};
 
 app.NodeLib.makeNewNode = function(location) {
-    $.post(app.SERVER, {method:'addNode', lat:location.lat(), lng: location.lng()}, function(result){
-        if(result.success) {
-            var nodeID = result.nodeID;
-            var node = new google.maps.Marker({
-                position: location,
-                draggable:true,
-                map: app.map,
-                nodeID: nodeID
-            });
-            app.nodes[nodeID] = (node);
-        } else {
-            alert('Cannot talk to the server');
-        }
+    $.post(app.SERVER, {lat:location.lat(), lng: location.lng()}, function(result){
+        //var nodeID = result.nodeID;
+        // todo
+        var nodeID = 1;
+        var node = new google.maps.Marker({
+            position: location,
+            draggable:true,
+            map: app.map,
+            nodeID: nodeID
+        });
+        app.nodes[nodeID] = (node);
+        app.LController.addElevationListener(app.nodes[nodeID]);
     });
 };
 
