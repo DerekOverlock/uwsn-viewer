@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/../config.inc.php";
 require_once PHP_LIB . "/NodeTest.php";
+require_once PHP_LIB . "/Mail.php";
 
 class RMacTest {
     /** @var NodeTest */
@@ -334,6 +335,17 @@ class RMacTestResult {
         $this->namFile = $namFile;
         $this->resultFile = $resultFile;
     }
+
+    public function eraseResults() {
+        unlink($this->tclFile);
+        unlink($this->traceFile);
+        unlink($this->namFile);
+        unlink($this->resultFile);
+    }
+
+    public function toArray() {
+        return array($this->tclFile, $this->resultFile, $this->traceFile, $this->namFile);
+    }
 }
 
 class TraceFileParser {
@@ -455,6 +467,8 @@ class TracePacketTransaction {
     public $rate;
     public $packetId;
     public $packetSize;
+    public $numBytesSent = 0;
+    public $numBytesReceived = 0;
     public $senderNode;
 
     public function addSentPacket(TracePacket $sent) {
@@ -462,10 +476,12 @@ class TracePacketTransaction {
         $this->packetId = $this->sentPacket->packetId;
         $this->packetSize = $this->sentPacket->packetSize;
         $this->senderNode = $this->sentPacket->nodeId;
+        $this->numBytesSent += $sent->packetSize;
     }
 
     public function addReceivePacket(TracePacket $receive) {
         $this->receivePacket = $receive;
+        $this->numBytesReceived += $receive->packetSize;
         if($this->sentPacket != null) {
             $this->calculate();
         }
@@ -500,7 +516,7 @@ class RMacTestSuite {
     public function test() {
         $this->test = new RMacTest(new NodeTest($this->networkId, $this->targetNodeId));
         $this->testResults = $this->test->runTest();
-        $this->parser = new TraceFileParser($this->test);
+        $this->parser = new TraceFileParser($this->testResults->traceFile);
         $packets = $this->parser->parse();
         foreach($packets as $packet) {
             $id = $packet->packetId;
@@ -527,6 +543,53 @@ class RMacTestSuite {
         return $this->tracePackets;
     }
 
+    /**
+     * @return RMacAggregateResult
+     */
+    public function aggregateTestResults() {
+        $result = new RMacAggregateResult();
+        foreach($this->tracePackets as $tracePacket) {
+            $result->add($tracePacket);
+        }
+        return $result;
+    }
+
+}
+
+class RMacAggregateResult {
+
+    public $totalNumBytesSent = 0;
+    public $totalNumBytesReceived = 0;
+    public $totalTransactionTime = 0;
+    public $numPackets = 0;
+    public $avgRate = 0;
+
+    private $totalRate = 0;
+
+
+    public function __construct() {
+
+    }
+
+    public function add(TracePacketTransaction $packet) {
+        $this->numPackets++;
+        $this->totalNumBytesSent += $packet->numBytesSent;
+        $this->totalNumBytesReceived += $packet->numBytesReceived;
+        $this->totalTransactionTime += $packet->transactionTime;
+        $this->totalRate += $packet->rate;
+        $this->avgRate = $this->totalRate/$this->numPackets;
+    }
+
+    public function toString() {
+        ob_start();
+?># packets sent and received: <?=$this->numPackets;?> packets
+Total bytes sent: <?=$this->totalNumBytesSent;?> bytes
+Total bytes received: <?=$this->totalNumBytesReceived;?> bytes
+Average throughput: <?=$this->avgRate?> kB/s
+        <?php
+        return ob_get_clean();
+    }
+
 }
 
 /** @var TracePacketTransaction[] $ar */
@@ -534,18 +597,14 @@ $ar = array();
 
 
 header('Content-type: text/plain');
-$t = new RMacTest(new NodeTest(2, 8));
-$testResult = $t->runTest();
-$parser = new TraceFileParser($testResult->traceFile);
-$packets = $parser->parse();
 
-foreach($packets as $packet) {
-    $id = $packet->packetId;
-    if(!isset($ar[$id])) $ar[$id] = new TracePacketTransaction();
-    if($packet->eventType == 's') {
-        $ar[$id]->addSentPacket($packet);
-    } else if($packet->eventType == 'r') {
-       $ar[$id]->addReceivePacket($packet);
-    }
-}
-echo json_encode($ar);
+$test = new RMacTestSuite(1, 2);
+$test->test();
+
+$aggResults = $test->aggregateTestResults();
+
+$mail = new Mail();
+$mail->send("overlock.derek@gmail.com", "Test Results", "<p>Here are your test results:</p><pre>".$aggResults->toString()."</pre>", $test->getTestResults()->toArray());
+
+$test->getTestResults()->eraseResults();
+

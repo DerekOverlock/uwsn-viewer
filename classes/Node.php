@@ -9,7 +9,7 @@ class Node {
     private static $primary_key = "NodeID";
 
     private $model;
-    private $NodeId, $NetworkId, $Name, $Latitude, $Longitude, $Altitude;
+    public $NodeId, $NetworkId, $Name, $Latitude, $Longitude, $Altitude;
 
     /** @var  GPSCoordinates */
     private $gps;

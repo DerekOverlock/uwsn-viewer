@@ -14,9 +14,9 @@ class Mail {
         $this->password = $json->password;
         $this->mail = new PHPMailer();
         $this->mail->isSMTP();
-        $this->mail->SMTPDebug = 2;
+        $this->mail->SMTPDebug = 0;
         $this->mail->Host = 'smtp.gmail.com';
-        $this->mail->Port = 597;
+        $this->mail->Port = 587;
         $this->mail->SMTPSecure = 'tls';
         $this->mail->SMTPAuth = true;
         $this->mail->Username = $this->user;
@@ -35,10 +35,8 @@ class Mail {
         if(!$this->mail->send()) {
             echo "Mail error";
         } else {
-            echo "Mail sent!";
+         //   echo "Mail sent!";
         }
     }
 
 }
-
-$mail = new Mail();
