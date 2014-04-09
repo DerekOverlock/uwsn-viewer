@@ -5,3 +5,4 @@ define('DB_SERVER', 'localhost');
 define('DB_NAME', 'uwsn_viewer');
 define('PHP_LIB', __DIR__ . "/classes");
 define('TEST_DIR', __DIR__ . '/tests');
+define('GMAIL_CREDENTIALS', __DIR__ . '/gmail.json');

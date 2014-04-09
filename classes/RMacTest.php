@@ -478,6 +478,57 @@ class TracePacketTransaction {
 
 }
 
+class RMacTestSuite {
+
+    private $networkId;
+    private $targetNodeId;
+    /** @var RMacTest */
+    private $test;
+    /** @var RMacTestResult */
+    private $testResults;
+    /** @var TraceFileParser */
+    private $parser;
+    /** @var TracePacketTransaction[] */
+    private $tracePackets;
+
+
+    public function __construct($networkId, $targetNodeId) {
+        $this->networkId = $networkId;
+        $this->targetNodeId = $targetNodeId;
+    }
+
+    public function test() {
+        $this->test = new RMacTest(new NodeTest($this->networkId, $this->targetNodeId));
+        $this->testResults = $this->test->runTest();
+        $this->parser = new TraceFileParser($this->test);
+        $packets = $this->parser->parse();
+        foreach($packets as $packet) {
+            $id = $packet->packetId;
+            if(!isset($this->tracePackets[$id])) $this->tracePackets[$id] = new TracePacketTransaction();
+            if($packet->eventType == 's') {
+                $this->tracePackets[$id]->addSentPacket($packet);
+            } else if($packet->eventType == 'r') {
+                $this->tracePackets[$id]->addReceivePacket($packet);
+            }
+        }
+    }
+
+    /**
+     * @return RMacTestResult
+     */
+    public function getTestResults() {
+        return $this->testResults;
+    }
+
+    /**
+     * @return TracePacketTransaction[]
+     */
+    public function getPacketTransactions() {
+        return $this->tracePackets;
+    }
+
+}
+
 /** @var TracePacketTransaction[] $ar */
 $ar = array();
 
