@@ -23,9 +23,10 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="container" >
         <h2>UWSN Simulator</h2>
         <h4>NetworkID: <?=$_GET['networkID'];?></h4>
+        <input type="hidden" value="<?=$_GET['networkID']?>" id="networkID">
 
         <h4>Node List:</h4>
         <div class="col-sm-5" style="margin-bottom: 15px">
