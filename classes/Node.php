@@ -70,6 +70,11 @@ class Node {
         return $result;
     }
 
+    public function delete() {
+        $sql = "DELETE FROM " . self::$tbl_name . " WHERE NodeId = '" . $this->NodeId."'";
+        return $this->model->query($sql);
+    }
+
     /**
      * @param $node_id
      * @return Node
