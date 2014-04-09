@@ -22,3 +22,5 @@ echo "\n";
 if($email) {
     echo "Sending email to $email";
 }
+
+$test->getTestResults()->eraseResults();
