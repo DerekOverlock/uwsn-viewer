@@ -15,7 +15,6 @@
     <script src="js/views/SimulationView.js"></script>
     <script type="text/javascript">
         $(function() {
-            //
             app.currentView = new app.SimulationView({networkId: '<?=$_GET['networkID']?>'});
             app.currentView.render();
         });
