@@ -591,20 +591,3 @@ Average throughput: <?=$this->avgRate?> kB/s
     }
 
 }
-
-/** @var TracePacketTransaction[] $ar */
-$ar = array();
-
-
-header('Content-type: text/plain');
-
-$test = new RMacTestSuite(1, 2);
-$test->test();
-
-$aggResults = $test->aggregateTestResults();
-
-$mail = new Mail();
-$mail->send("overlock.derek@gmail.com", "Test Results", "<p>Here are your test results:</p><pre>".$aggResults->toString()."</pre>", $test->getTestResults()->toArray());
-
-$test->getTestResults()->eraseResults();
-
