@@ -1,9 +1,9 @@
-var app = {};
+var app = app || {};
 
 app.SERVER = '/uwsn-viewer';
 
 $(function(){
-    google.maps.event.addDomListener(window, 'load', app.Init);
+    //google.maps.event.addDomListener(window, 'load', app.Init);
 });
 
 app.Init = function() {
@@ -147,7 +147,7 @@ app.NodeLib.makeNewNode = function(location) {
             if (results[0]) {
                 var elevation = results[0].elevation;
                 var networkID = $("#networkID").val();
-                $.post(app.SERVER+'/scripts/addNodeToNetwork.php', {lat:lat, long: lng, alt: elevation, networkId: networkID}, function(result){
+                $.post(app.SERVER+'/scripts/manageNode.php', {lat:lat, long: lng, alt: elevation, networkId: networkID}, function(result){
                     var nodeID = result.nodeId;
                     var node = new google.maps.Marker({
                         position: location,

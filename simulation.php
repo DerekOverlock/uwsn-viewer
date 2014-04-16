@@ -12,12 +12,18 @@
     <script type="text/javascript"
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDR4kXFcx8iRKOaQ2ZgukZnxIKC_KAyCfA&sensor=false">
     </script>
-    <script src="js/Node.js"></script>
+    <script src="js/views/SimulationView.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            app.currentView = new app.SimulationView({networkId: '<?=$_GET['networkID']?>'});
+            app.currentView.render();
+        });
+    </script>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <style type="text/css">
         html { height: 100% }
         body { height: 100%;}
-        #map-canvas { height: 50%; width: 70%; margin-left: 15%}
+        #map-canvas { width: 100%; height: 100%; }
     </style>
 
 </head>
@@ -25,19 +31,15 @@
 <body>
     <div class="container" >
         <h2>UWSN Simulator</h2>
-        <h4>NetworkID: <?=$_GET['networkID'];?></h4>
         <input type="hidden" value="<?=$_GET['networkID']?>" id="networkID">
-
-        <h4>Node List:</h4>
-        <div class="col-sm-5" style="margin-bottom: 15px">
-        <select multiple class="form-control ">
-            <option>Node 1</option>
-            <option>Node 2</option>
-
-        </select>
+        <div class="col-md-8" style="height: 600px;">
+            <div id="map-canvas"></div>
+        </div>
+        <div class="col-md-4">
+            <select multiple class="form-control" id="nodeSelect" style="height: 600px;">
+            </select>
         </div>
     </div>
-    <div id="map-canvas"></div>
     <div id="sim-box" class="container" style="margin-top: 20px">
         <form class="form-inline" role="form">
             <div class="form-group">
@@ -47,9 +49,11 @@
             <button type="button" class="btn btn-sm btn-primary" id="start_sim_btn">Start</button>
         </form>
     </div>
-    <div id="simulation-result-box" class="container">
+    <div class="container">
         <h3>Result Console:</h3>
-        <textarea class="form-control" rows="5"></textarea>
+        <pre class="code" id="simulation-result-box">
+
+        </pre>
     </div>
 </body>
 
