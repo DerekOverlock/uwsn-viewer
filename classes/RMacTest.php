@@ -437,7 +437,8 @@ class TracePacket {
         $this->level = $level;
         $this->packetId = $packetId;
         $this->payloadType = $payloadType;
-        $this->packetSize = $packetSize;
+        // in bytes
+        $this->packetSize = $packetSize/8;
         $this->macDelay = $macDelay;
         $this->destMac = $destMac;
         $this->sourceMac = $sourceMac;
